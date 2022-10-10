@@ -39,6 +39,7 @@ This is the Excalibur repo for the IS lab at UTCN 2022-2023
    8. create_date *
    9. start_date
    10. end_date
+   11. status
 4. Comment
    1. ID - PK
    2. task_id - FK
