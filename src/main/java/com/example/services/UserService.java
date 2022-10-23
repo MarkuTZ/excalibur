@@ -7,10 +7,13 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.util.Base64;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -22,6 +25,7 @@ public class UserService {
 
     @Value("${app.secret.key}")
     private String secret_key;
+    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     // code to generate Token
     public String generateToken(String subject) {
@@ -34,19 +38,20 @@ public class UserService {
     }
 
     //check user
-    public boolean existUser(String username) {
+    public User existUser(String username) {
+        return userRepository.findByUsername(username);
+    }
 
-        User u = userRepository.findByUsername(username);
-        if (u != null) return true;
-        else return false;
+    public boolean checkPassword(User u, String pass) {
+        return Objects.equals(u.getPassword(), passwordEncoder.encode(pass));
     }
 
     //save user in DB
-    public User saveUserinDb(String username, String password) {
+    public User saveUserInDb(String username, String password) {
         User u = new User();
-        if (!existUser(username)) {
+        if (existUser(username) != null) {
             u.setUsername(username);
-            u.setPassword(password);
+            u.setPassword(passwordEncoder.encode(password));
             return userRepository.save(u);
         } else {
             return null;

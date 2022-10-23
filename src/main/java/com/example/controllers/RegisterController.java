@@ -25,8 +25,8 @@ public class RegisterController {
         String stringUsername = json.get("username").textValue();
         String stringPassword = json.get("password").textValue();
         Map<String, String> jsonResponse = new HashMap<>();
-        if (!userService.existUser(stringUsername)) {
-            User u= userService.saveUserinDb(stringUsername, stringPassword);
+        if (userService.existUser(stringUsername) == null) {
+            User u= userService.saveUserInDb(stringUsername, stringPassword);
             jsonResponse.put(".", "Successfully registered user");
             return ResponseEntity.ok(u);
         } else {

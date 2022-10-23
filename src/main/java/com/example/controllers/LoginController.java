@@ -1,5 +1,6 @@
 package com.example.controllers;
 
+import com.example.models.User;
 import com.example.services.UserService;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,12 @@ public class LoginController {
         String stringUsername = json.get("username").textValue();
         String stringPassword = json.get("password").textValue();
         Map<String, String> jsonResponse = new HashMap<>();
-        if (userService.existUser(stringUsername)) {
+        User u;
+        if ((u = userService.existUser(stringUsername)) != null) {
+            if (!userService.checkPassword(u, stringPassword)) {
+                jsonResponse.put("message", "Wrong credentials!");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonResponse);
+            }
             String token = userService.generateToken(stringUsername);
             jsonResponse.put("token", token);
             return ResponseEntity.ok(jsonResponse);
