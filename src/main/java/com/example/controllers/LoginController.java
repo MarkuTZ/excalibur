@@ -1,27 +1,30 @@
 package com.example.controllers;
 
-import com.example.models.User;
-import com.example.repositories.UserRepository;
-import com.example.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
+@RequiredArgsConstructor
 public class LoginController {
 
-    @Autowired
-    private UserService userService;
+    @PostMapping("/token")
+    public ResponseEntity<?> getToken(@RequestBody ObjectNode json) {
 
-    @PostMapping ("/token")
-    public String getToken(@RequestParam("username") String username, @RequestParam("password") String password)
-    {
-        String token;
-        token= userService.generateToken(username,password);
-        if (token.isBlank())
-        {
-            return "no token found";
-        }
-        else return token;
+        System.out.println(json.get("username"));
+        System.out.println(json.get("password"));
+
+
+        Map<String, String> jsonResponse = new HashMap<>();
+        //Put generated TOKEN HERE
+        jsonResponse.put("token", "GENERATEDTOKEN");
+        return ResponseEntity.ok(jsonResponse);
     }
 
 }
