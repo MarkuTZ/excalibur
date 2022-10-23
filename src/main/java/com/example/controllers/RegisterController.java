@@ -14,24 +14,25 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-public class LoginController {
-
+public class RegisterController
+{
     @Autowired
-    UserService userService;
-    @PostMapping("/token")
-    public ResponseEntity<?> getToken(@RequestBody ObjectNode json) {
-
+    private UserService userService;
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@RequestBody ObjectNode json)
+    {
         String stringUsername =json.get("username").textValue();
         String stringPassword =json.get("password").textValue();
         Map<String, String> jsonResponse = new HashMap<>();
-        if (userService.existUser(stringUsername,stringPassword))
+        if (!userService.existUser(stringUsername,stringPassword))
         {
-            String token =userService.generateToken(stringUsername);
-            jsonResponse.put("token", token);
+            userService.saveUserinDb(stringUsername,stringPassword);
+            jsonResponse.put(".", "Successfully registered user");
         }
-        else jsonResponse.put("Error:", "User doesn't exist");
+        else
+        {
+            jsonResponse.put("Error:", "User already exist");
+        }
         return ResponseEntity.ok(jsonResponse);
     }
-
-
 }
