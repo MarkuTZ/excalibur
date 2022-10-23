@@ -22,12 +22,12 @@ public class RegisterController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody ObjectNode json) {
+        System.out.println("IM HERE");
         String stringUsername = json.get("username").textValue();
         String stringPassword = json.get("password").textValue();
         Map<String, String> jsonResponse = new HashMap<>();
         if (userService.existUser(stringUsername) == null) {
-            User u= userService.saveUserInDb(stringUsername, stringPassword);
-            jsonResponse.put(".", "Successfully registered user");
+            User u = userService.saveUserInDb(stringUsername, stringPassword);
             return ResponseEntity.ok(u);
         } else {
             jsonResponse.put("Error:", "User already exist");

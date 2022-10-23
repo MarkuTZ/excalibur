@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.util.Base64;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -25,7 +24,7 @@ public class UserService {
 
     @Value("${app.secret.key}")
     private String secret_key;
-    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     // code to generate Token
     public String generateToken(String subject) {
@@ -43,13 +42,13 @@ public class UserService {
     }
 
     public boolean checkPassword(User u, String pass) {
-        return Objects.equals(u.getPassword(), passwordEncoder.encode(pass));
+        return passwordEncoder.matches(pass, u.getPassword());
     }
 
     //save user in DB
     public User saveUserInDb(String username, String password) {
         User u = new User();
-        if (existUser(username) != null) {
+        if (existUser(username) == null) {
             u.setUsername(username);
             u.setPassword(passwordEncoder.encode(password));
             return userRepository.save(u);
