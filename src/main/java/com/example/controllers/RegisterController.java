@@ -14,23 +14,19 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-public class RegisterController
-{
+public class RegisterController {
     @Autowired
     private UserService userService;
+
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody ObjectNode json)
-    {
-        String stringUsername =json.get("username").textValue();
-        String stringPassword =json.get("password").textValue();
+    public ResponseEntity<?> registerUser(@RequestBody ObjectNode json) {
+        String stringUsername = json.get("username").textValue();
+        String stringPassword = json.get("password").textValue();
         Map<String, String> jsonResponse = new HashMap<>();
-        if (!userService.existUser(stringUsername,stringPassword))
-        {
-            userService.saveUserinDb(stringUsername,stringPassword);
+        if (!userService.existUser(stringUsername, stringPassword)) {
+            userService.saveUserinDb(stringUsername, stringPassword);
             jsonResponse.put(".", "Successfully registered user");
-        }
-        else
-        {
+        } else {
             jsonResponse.put("Error:", "User already exist");
         }
         return ResponseEntity.ok(jsonResponse);

@@ -18,18 +18,17 @@ public class LoginController {
 
     @Autowired
     UserService userService;
+
     @PostMapping("/token")
     public ResponseEntity<?> getToken(@RequestBody ObjectNode json) {
 
-        String stringUsername =json.get("username").textValue();
-        String stringPassword =json.get("password").textValue();
+        String stringUsername = json.get("username").textValue();
+        String stringPassword = json.get("password").textValue();
         Map<String, String> jsonResponse = new HashMap<>();
-        if (userService.existUser(stringUsername,stringPassword))
-        {
-            String token =userService.generateToken(stringUsername);
+        if (userService.existUser(stringUsername, stringPassword)) {
+            String token = userService.generateToken(stringUsername);
             jsonResponse.put("token", token);
-        }
-        else jsonResponse.put("Error:", "User doesn't exist");
+        } else jsonResponse.put("Error:", "User doesn't exist");
         return ResponseEntity.ok(jsonResponse);
     }
 
