@@ -7,6 +7,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
@@ -22,6 +24,7 @@ public class UserService {
 
     @Value("${app.secret.key}")
     private String secret_key;
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public User getUser(String username) {
         return userRepository.findByUsername(username);
@@ -38,19 +41,24 @@ public class UserService {
     }
 
     //check user
-    public boolean existUser(String username, String password) {
-        User u = new User();
-        u = userRepository.findByUsername(username);
-        if ((u != null) && (u.getPassword().equals(password))) return true;
-        else return false;
+    public User existUser(String username) {
+        return userRepository.findByUsername(username);
+    }
+
+    public boolean checkPassword(User u, String pass) {
+        return passwordEncoder.matches(pass, u.getPassword());
     }
 
     //save user in DB
-    public void saveUserinDb(String username, String password) {
+    public User saveUserInDb(String username, String password) {
         User u = new User();
-        u.setUsername(username);
-        u.setPassword(password);
-        userRepository.save(u);
+        if (existUser(username) == null) {
+            u.setUsername(username);
+            u.setPassword(passwordEncoder.encode(password));
+            return userRepository.save(u);
+        } else {
+            return null;
+        }
     }
 
     public boolean isValidToken(String token, String username) {
