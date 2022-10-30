@@ -1,8 +1,9 @@
-package com.example.filters;
+package com.example.security.filters;
 
 import com.example.models.User;
 import com.example.services.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,11 +15,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-
+@RequiredArgsConstructor
 public class CustomFilter extends OncePerRequestFilter {
 
     @Autowired
-    private UserService userServiceUtil;
+    private final UserService userServiceUtil;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -27,10 +28,13 @@ public class CustomFilter extends OncePerRequestFilter {
 
         String username = null;
         String userService = null;
-
-        if (requestTokenHeader != null) {
+        if(requestTokenHeader == null || !requestTokenHeader.startsWith("Bearer ")){
+            response.sendError(402,"No Token");
+            return;
+        }
+        else if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
             //TODO: Add substring(7) or something like that. Token comes like this "BEARER ASDASDQWEASD"
-            userService = requestTokenHeader;
+            userService = requestTokenHeader.substring(7);
             try {
                 username = userServiceUtil.getSubject(userService);
             } catch (IllegalArgumentException e) {
@@ -46,6 +50,10 @@ public class CustomFilter extends OncePerRequestFilter {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), null);
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             }
+        }
+        else {
+            response.sendError(402,"Invalid Token");
+            return;
         }
         filterChain.doFilter(request, response);
     }
