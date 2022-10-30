@@ -1,6 +1,7 @@
 package com.example.controllers;
 
 import com.example.models.User;
+import com.example.security.JwtUtils;
 import com.example.services.UserService;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,9 @@ import java.util.Map;
 public class LoginController {
 
     @Autowired
-    UserService userService;
+    private final UserService userService;
+    @Autowired
+    private final JwtUtils jwtUtils;
 
     @PostMapping("/token")
     public ResponseEntity<?> getToken(@RequestBody ObjectNode json) {
@@ -33,7 +36,7 @@ public class LoginController {
                 jsonResponse.put("message", "Wrong credentials!");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonResponse);
             }
-            String token = userService.generateToken(stringUsername);
+            String token = jwtUtils.generateToken(stringUsername);
             jsonResponse.put("token", token);
             return ResponseEntity.ok(jsonResponse);
         } else

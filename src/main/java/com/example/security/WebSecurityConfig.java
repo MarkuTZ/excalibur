@@ -12,7 +12,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.DefaultSecurityFilterChain;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 @Configuration
 @RequiredArgsConstructor
@@ -20,25 +24,31 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig {
 
-
-     private final UserService userService;
-
      @Bean
      public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
          return authenticationConfiguration.getAuthenticationManager();
      }
 
-     public DefaultSecurityFilterChain configure(HttpSecurity httpSecurity) throws Exception {
+     @Bean
+     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
           httpSecurity.cors()
                   .and()
                   .csrf()
-                  .disable().
-                  sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                  .and()
-                  .authorizeRequests()
-                  .antMatchers().permitAll();
-             httpSecurity.addFilterBefore(new CustomFilter(new UserService()), UsernamePasswordAuthenticationFilter.class);
+                  .disable()
+                  .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+             httpSecurity.addFilterBefore(new CustomFilter(new JwtUtils()), UsernamePasswordAuthenticationFilter.class);
              return httpSecurity.build();
 
      }
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurerAdapter() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                        .allowedMethods("*");
+            }
+        };
+    }
 }
