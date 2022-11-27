@@ -26,7 +26,6 @@ public class LoginController {
 
     @PostMapping("/token")
     public ResponseEntity<?> getToken(@RequestBody ObjectNode json) {
-
         String stringUsername = json.get("username").textValue();
         String stringPassword = json.get("password").textValue();
         Map<String, String> jsonResponse = new HashMap<>();
@@ -39,13 +38,23 @@ public class LoginController {
             String token = jwtUtils.generateToken(stringUsername);
             jsonResponse.put("token", token);
             return ResponseEntity.ok(jsonResponse);
-        } else
-        {
+        } else {
             jsonResponse.put("Error:", "User doesn't exist");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(jsonResponse);
         }
-
     }
 
-
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@RequestBody ObjectNode json) {
+        String stringUsername = json.get("username").textValue();
+        String stringPassword = json.get("password").textValue();
+        Map<String, String> jsonResponse = new HashMap<>();
+        if (userService.existUser(stringUsername) == null) {
+            User u = userService.saveUserInDb(stringUsername, stringPassword);
+            return ResponseEntity.ok(u);
+        } else {
+            jsonResponse.put("Error:", "User already exist");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonResponse);
+        }
+    }
 }

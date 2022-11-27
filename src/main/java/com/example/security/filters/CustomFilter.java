@@ -1,7 +1,6 @@
 package com.example.security.filters;
 
 import com.example.security.JwtUtils;
-import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,8 +18,9 @@ public class CustomFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
 
-    private static String[] AUTH_WHITELIST = {
+    private final String[] AUTH_WHITELIST = {
             "/token",
+            "/register"
     };
 
     @Override
@@ -35,8 +35,8 @@ public class CustomFilter extends OncePerRequestFilter {
         }
 
         final String requestTokenHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        String username = null;
-        String token = null;
+        String username;
+        String token;
         if (requestTokenHeader == null || !requestTokenHeader.startsWith("Bearer ")) {
             response.sendError(400, "NO TOKEN");
             return;
