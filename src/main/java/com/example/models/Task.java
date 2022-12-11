@@ -3,15 +3,15 @@ package com.example.models;
 import com.example.models.enums.Priority;
 import com.example.models.enums.Status;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
-@Entity
 @Table(name = "task")
+@Entity
 @Data
+@NoArgsConstructor
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,24 +23,20 @@ public class Task {
     @Column
     private Priority priority;
     @Column
-    private Date create_date;
+    private Date createDate;
     @Column
-    private Date start_date;
+    private Date startDate;
     @Column
-    private Date end_date;
+    private Date endDate;
     @Column
     private Status status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "creator_id")
+    @ManyToOne
     private User creator;
 
-    @ManyToMany(mappedBy = "tasks")
-    private Set<User> assignedUsers = new HashSet<>();
+    @ManyToOne
+    private User assignee;
 
-
-
-
-
-
+    @ManyToOne
+    private Project project;
 }

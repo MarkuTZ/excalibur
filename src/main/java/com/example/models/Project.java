@@ -1,6 +1,7 @@
 package com.example.models;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -8,8 +9,9 @@ import java.util.Date;
 import java.util.List;
 
 @Table(name = "project")
-@Data
 @Entity
+@Data
+@NoArgsConstructor
 public class Project {
 
     @Id
@@ -20,17 +22,22 @@ public class Project {
     @Column
     private String description;
     @Column
-    private Date create_date;
+    private Date createDate;
     @Column
     private Date deadline;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id")
+    @ManyToOne
     private User owner;
 
-    @OneToMany(cascade= {CascadeType.ALL})
-    @JoinColumn(name="project_id")
-            private List<Task> taskList;
 
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            //Numele field-ului din clasa TASK care are referinta catre obiectul PROJECT.
+            mappedBy = "project",
+            orphanRemoval = true
+    )
+    private List<Task> tasksList = new ArrayList<>();
 
+    //TODO: Create methods for adding tasks
+    // ex: addTask(Task task) should add the task to the list of tasks and then set the project as the task's project.
 }
