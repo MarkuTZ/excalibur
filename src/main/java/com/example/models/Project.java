@@ -1,11 +1,15 @@
 package com.example.models;
 
+import lombok.Data;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Table(name = "project")
+@Data
+@Entity
 public class Project {
 
     @Id

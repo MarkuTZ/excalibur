@@ -24,8 +24,10 @@ public class LoginController {
     @Autowired
     private final JwtUtils jwtUtils;
 
+    static User logedUser ;
     @PostMapping("/token")
     public ResponseEntity<?> getToken(@RequestBody ObjectNode json) {
+        logedUser=new User();
         String stringUsername = json.get("username").textValue();
         String stringPassword = json.get("password").textValue();
         Map<String, String> jsonResponse = new HashMap<>();
@@ -37,6 +39,9 @@ public class LoginController {
             }
             String token = jwtUtils.generateToken(stringUsername);
             jsonResponse.put("token", token);
+            logedUser.setId(userService.getUser(jwtUtils.getSubject(token)).getId());
+            logedUser.setUsername(stringUsername);
+            logedUser.setPassword(stringPassword);
             return ResponseEntity.ok(jsonResponse);
         } else {
             jsonResponse.put("Error:", "User doesn't exist");
@@ -50,7 +55,7 @@ public class LoginController {
         String stringPassword = json.get("password").textValue();
         Map<String, String> jsonResponse = new HashMap<>();
         if (userService.existUser(stringUsername) == null) {
-            User u = userService.saveUserInDb(stringUsername, stringPassword);
+            User u  = userService.saveUserInDb(stringUsername, stringPassword);
             return ResponseEntity.ok(u);
         } else {
             jsonResponse.put("Error:", "User already exist");
