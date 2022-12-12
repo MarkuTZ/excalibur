@@ -1,5 +1,6 @@
 package com.example.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,5 +17,6 @@ public class User {
     @Column
     private String username;
     @Column
+    @JsonIgnore
     private String password;
 }
