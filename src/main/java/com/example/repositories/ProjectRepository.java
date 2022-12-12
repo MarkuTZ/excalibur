@@ -9,8 +9,6 @@ import java.util.List;
 
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long> {
-    Project findByName(String name);
 
     List<Project> findAllByOwnerIs(User owner);
-
 }
