@@ -30,4 +30,9 @@ public class ProjectService {
         project.setCreateDate(new Date());
         return projectRepository.save(project);
     }
+
+    public Project getProjectById(int id){
+
+        return projectRepository.findAllById(id);
+    }
 }

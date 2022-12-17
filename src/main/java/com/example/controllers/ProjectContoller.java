@@ -1,15 +1,13 @@
 package com.example.controllers;
 
 import com.example.models.Project;
+import com.example.models.Task;
 import com.example.security.JwtUtils;
 import com.example.services.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.util.List;
@@ -36,4 +34,13 @@ public class ProjectContoller {
         String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
         return projectService.getProjects(loggedInEmail);
     }
+//
+//    @GetMapping(value = { "/projects/{idProjects}/task/{idTask}" })
+//    @ResponseBody
+//    public Task  createTask(@PathVariable("idProjects") int projectID,@PathVariable("idTask") int taskID){
+//
+//
+//    }
+
+
 }
