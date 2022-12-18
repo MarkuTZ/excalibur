@@ -6,7 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.Date;
+import java.util.Set;
 
 @Table(name = "project")
 @Entity
@@ -38,14 +39,13 @@ public class Project {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "project")
 	private Set<Task> tasksList;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "project_user_collaborators",
-            joinColumns = @JoinColumn(name = "project_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private Set<User> collaborators = new HashSet<>();
+	@ManyToMany(cascade = CascadeType.ALL)
+	@JoinTable(name = "project_user_collaborators", joinColumns = @JoinColumn(name = "project_id"),
+			inverseJoinColumns = @JoinColumn(name = "user_id"))
+	private Set<User> collaborators;
 
-    //TODO: Create methods for adding tasks
-    // ex: addTask(Task task) should add the task to the list of tasks and then set the project as the task's project.
+	// TODO: Create methods for adding tasks
+	// ex: addTask(Task task) should add the task to the list of tasks and then set the
+	// project as the task's project.
+
 }
