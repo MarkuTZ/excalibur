@@ -1,8 +1,10 @@
 package com.example.services;
 
 import com.example.models.Project;
+import com.example.models.Task;
 import com.example.models.User;
 import com.example.repositories.ProjectRepository;
+import com.example.repositories.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,9 @@ public class ProjectService {
 
 	@Autowired
 	private final ProjectRepository projectRepository;
+
+	@Autowired
+	private final TaskRepository taskRepository;
 
 	@Autowired
 	private final UserService userService;
@@ -34,6 +39,20 @@ public class ProjectService {
 
 	public Project getProjectById(long id) {
 		return projectRepository.findById(id).orElse(null);
+	}
+
+	public List<Task> getTasks(long project_id) {
+		return taskRepository.findAllByProject_Id(project_id);
+	}
+
+	public Task getTaskById(long taskID, long projectID) {
+		Task task = taskRepository.findById(taskID).orElse(null);
+		if (task == null || task.getProject().getId() != projectID) {
+			return null;
+		}
+		else {
+			return task;
+		}
 	}
 
 }
