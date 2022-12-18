@@ -14,25 +14,26 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProjectService {
 
-    @Autowired
-    private final ProjectRepository projectRepository;
-    @Autowired
-    private final UserService userService;
+	@Autowired
+	private final ProjectRepository projectRepository;
 
-    public List<Project> getProjects(String email) {
-        User loggedInUser = userService.getUser(email);
-        return projectRepository.findAllByOwnerIs(loggedInUser);
-    }
+	@Autowired
+	private final UserService userService;
 
-    public Project saveInDb(Project project, String loggedInEmail) {
-        User loggedInUser = userService.getUser(loggedInEmail);
-        project.setOwner(loggedInUser);
-        project.setCreateDate(new Date());
-        return projectRepository.save(project);
-    }
+	public List<Project> getProjects(String email) {
+		User loggedInUser = userService.getUser(email);
+		return projectRepository.findAllByOwnerIs(loggedInUser);
+	}
 
-    public Project getProjectById(long id) {
+	public Project saveInDb(Project project, String loggedInEmail) {
+		User loggedInUser = userService.getUser(loggedInEmail);
+		project.setOwner(loggedInUser);
+		project.setCreateDate(new Date());
+		return projectRepository.save(project);
+	}
 
-        return projectRepository.findById(id).orElse(null);
-    }
+	public Project getProjectById(long id) {
+		return projectRepository.findById(id).orElse(null);
+	}
+
 }

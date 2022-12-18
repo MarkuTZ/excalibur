@@ -1,40 +1,42 @@
 package com.example.models;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.*;
 
 @Table(name = "project")
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class Project {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long Id;
-    @Column
-    private String name;
-    @Column
-    private String description;
-    @Column
-    private Date createDate;
-    @Column
-    private Date deadline;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long Id;
 
-    @ManyToOne
-    private User owner;
+	@Column
+	private String name;
 
+	@Column
+	private String description;
 
-    @OneToMany(
-            cascade = CascadeType.ALL,
-            //Numele field-ului din clasa TASK care are referinta catre obiectul PROJECT.
-            mappedBy = "project",
-            orphanRemoval = true
-    )
-    private List<Task> tasksList = new ArrayList<>();
+	@Column
+	private Date createDate;
+
+	@Column
+	private Date deadline;
+
+	@ManyToOne
+	private User owner;
+
+	@JsonManagedReference
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "project")
+	private Set<Task> tasksList;
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(

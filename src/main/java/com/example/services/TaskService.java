@@ -7,24 +7,25 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class TaskService {
 
-    @Autowired
-    private final TaskRepository taskRepository;
-    @Autowired
-    private final ProjectService projectService;
+	@Autowired
+	private final TaskRepository taskRepository;
 
-    public List<Task> getTasks(long id) {
-        Project project = projectService.getProjectById(id);
-        return project.getTasksList();
-    }
+	@Autowired
+	private final ProjectService projectService;
 
-//    public Task getTask(int idTask,int idProject){
-//
-//    }
+	public Set<Task> getTasks(long id) {
+		Project project = projectService.getProjectById(id);
+		return project.getTasksList();
+	}
+
+	// public Task getTask(int idTask,int idProject){
+	//
+	// }
 
 }

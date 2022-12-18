@@ -1,6 +1,5 @@
 package com.example.controllers;
 
-
 import com.example.models.Task;
 import com.example.services.TaskService;
 import lombok.RequiredArgsConstructor;
@@ -10,22 +9,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
 public class TaskController {
 
+	@Autowired
+	private final TaskService taskService;
 
-    @Autowired
-    private final TaskService taskService;
+	@GetMapping(value = { "/projects/{idProjects}/tasks" })
+	@ResponseBody
+	public Set<Task> getAllTasks(@PathVariable("idProjects") long projectID) {
+		return taskService.getTasks(projectID);
+	}
 
-
-    @GetMapping(value = {"/projects/{idProjects}/tasks"})
-    @ResponseBody
-    public List<Task> getAllTasks(@PathVariable("idProjects") String projectID) {
-
-        int IdProject = Integer.parseInt(projectID);
-        return taskService.getTasks(IdProject);
-    }
 }
