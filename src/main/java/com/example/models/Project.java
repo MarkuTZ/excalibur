@@ -1,49 +1,51 @@
 package com.example.models;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.Date;
+import java.util.Set;
 
 @Table(name = "project")
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class Project {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long Id;
-    @Column
-    private String name;
-    @Column
-    private String description;
-    @Column
-    private Date createDate;
-    @Column
-    private Date deadline;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long id;
 
-    @ManyToOne
-    private User owner;
+	@Column
+	private String name;
 
+	@Column
+	private String description;
 
-    @OneToMany(
-            cascade = CascadeType.ALL,
-            //Numele field-ului din clasa TASK care are referinta catre obiectul PROJECT.
-            mappedBy = "project",
-            orphanRemoval = true
-    )
-    private List<Task> tasksList = new ArrayList<>();
+	@Column
+	private Date createDate;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "project_user_collaborators",
-            joinColumns = @JoinColumn(name = "project_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private Set<User> collaborators = new HashSet<>();
+	@Column
+	private Date deadline;
 
-    //TODO: Create methods for adding tasks
-    // ex: addTask(Task task) should add the task to the list of tasks and then set the project as the task's project.
+	@ManyToOne
+	private User owner;
+
+	@JsonManagedReference
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "project")
+	private Set<Task> tasksList;
+
+	@ManyToMany(cascade = CascadeType.ALL)
+	@JoinTable(name = "project_user_collaborators", joinColumns = @JoinColumn(name = "project_id"),
+			inverseJoinColumns = @JoinColumn(name = "user_id"))
+	private Set<User> collaborators;
+
+	// TODO: Create methods for adding tasks
+	// ex: addTask(Task task) should add the task to the list of tasks and then set the
+	// project as the task's project.
+
 }

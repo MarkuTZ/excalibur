@@ -11,12 +11,16 @@ import javax.persistence.*;
 @Data
 @NoArgsConstructor
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long Id;
-    @Column
-    private String username;
-    @Column
-    @JsonIgnore
-    private String password;
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long id;
+
+	@Column
+	private String username;
+
+	@JsonIgnore
+	@Column
+	private String password;
+
 }

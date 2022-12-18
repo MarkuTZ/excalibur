@@ -12,33 +12,35 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserService {
 
-    @Autowired
-    private final UserRepository userRepository;
+	@Autowired
+	private final UserRepository userRepository;
 
-    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+	private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public User getUser(String username) {
-        return userRepository.findByUsername(username);
-    }
+	public User getUser(String username) {
+		return userRepository.findByUsername(username);
+	}
 
-    //check user
-    public User existUser(String username) {
-        return userRepository.findByUsername(username);
-    }
+	// check user
+	public User existUser(String username) {
+		return userRepository.findByUsername(username);
+	}
 
-    public boolean checkPassword(User u, String pass) {
-        return passwordEncoder.matches(pass, u.getPassword());
-    }
+	public boolean checkPassword(User u, String pass) {
+		return passwordEncoder.matches(pass, u.getPassword());
+	}
 
-    //save user in DB
-    public User saveUserInDb(String username, String password) {
-        User u = new User();
-        if (existUser(username) == null) {
-            u.setUsername(username);
-            u.setPassword(passwordEncoder.encode(password));
-            return userRepository.save(u);
-        } else {
-            return null;
-        }
-    }
+	// save user in DB
+	public User saveUserInDb(String username, String password) {
+		User u = new User();
+		if (existUser(username) == null) {
+			u.setUsername(username);
+			u.setPassword(passwordEncoder.encode(password));
+			return userRepository.save(u);
+		}
+		else {
+			return null;
+		}
+	}
+
 }
