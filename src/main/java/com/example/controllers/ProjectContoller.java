@@ -34,13 +34,7 @@ public class ProjectContoller {
         String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
         return projectService.getProjects(loggedInEmail);
     }
-//
-//    @GetMapping(value = { "/projects/{idProjects}/task/{idTask}" })
-//    @ResponseBody
-//    public Task  createTask(@PathVariable("idProjects") int projectID,@PathVariable("idTask") int taskID){
-//
-//
-//    }
+
 
 
 }

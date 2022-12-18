@@ -24,5 +24,8 @@ public class TaskService {
         return taskRepository.findAllByProjectId(project);
     }
 
+//    public Task getTask(int idTask,int idProject){
+//
+//    }
 
 }
