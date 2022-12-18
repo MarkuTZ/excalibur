@@ -2,7 +2,6 @@ package com.example.services;
 
 import com.example.models.Project;
 import com.example.models.Task;
-import com.example.repositories.ProjectRepository;
 import com.example.repositories.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +18,9 @@ public class TaskService {
     @Autowired
     private final ProjectService projectService;
 
-    public List<Task> getTasks(int id){
+    public List<Task> getTasks(long id) {
         Project project = projectService.getProjectById(id);
-        return taskRepository.findAllByProjectId(project);
+        return project.getTasksList();
     }
 
 //    public Task getTask(int idTask,int idProject){

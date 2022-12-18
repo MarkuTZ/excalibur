@@ -31,8 +31,8 @@ public class ProjectService {
         return projectRepository.save(project);
     }
 
-    public Project getProjectById(int id){
+    public Project getProjectById(long id) {
 
-        return projectRepository.findAllById(id);
+        return projectRepository.findById(id).orElse(null);
     }
 }
