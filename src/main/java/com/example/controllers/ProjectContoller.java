@@ -36,12 +36,12 @@ public class ProjectContoller {
 	}
 
 	@GetMapping(value = { "/{projectID}/tasks" })
-	public List<Task> getAllTasks(@PathVariable("projectID") long projectID) {
+	public List<Task> getAllTasksByProject(@PathVariable("projectID") long projectID) {
 		return projectService.getTasks(projectID);
 	}
 
 	@GetMapping(value = { "/{projectID}/tasks/{taskID}" })
-	public Task getAllTasks(@PathVariable("projectID") long projectID, @PathVariable("taskID") long taskID) {
+	public Task getTaskById(@PathVariable("projectID") long projectID, @PathVariable("taskID") long taskID) {
 		return projectService.getTaskById(taskID, projectID);
 	}
 
