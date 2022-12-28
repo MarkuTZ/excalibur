@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -60,4 +61,10 @@ public class ProjectService {
 		 projectRepository.findById(id).ifPresent(projectRepository::delete);
 	}
 
+	public int getNumberOfTasks(long id, String status){
+		return getTasks(id).stream()
+				.filter(task -> String.valueOf(task.getStatus()).equals(status)).toList()
+				.size();
+
+	}
 }
