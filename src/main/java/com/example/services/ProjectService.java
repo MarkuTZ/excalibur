@@ -11,57 +11,64 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class ProjectService {
 
-    @Autowired
-    private final ProjectRepository projectRepository;
-    @Autowired
-    private final UserService userService;
-    @Autowired
-    private final TaskRepository taskRepository;
+	@Autowired
+	private final ProjectRepository projectRepository;
 
-    public List<Project> getProjects(String email) {
-        User loggedInUser = userService.getUser(email);
-        return projectRepository.findAllByOwnerIs(loggedInUser);
-    }
+	@Autowired
+	private final UserService userService;
 
-    public Project saveInDb(Project project, String loggedInEmail) {
-        User loggedInUser = userService.getUser(loggedInEmail);
-        project.setOwner(loggedInUser);
-        project.setCreateDate(new Date());
-        return projectRepository.save(project);
-    }
+	@Autowired
+	private final TaskRepository taskRepository;
 
-    public Project getProjectById(long id) {
+	public List<Project> getProjects(String email) {
+		User loggedInUser = userService.getUser(email);
+		return projectRepository.findAllByOwnerIs(loggedInUser);
+	}
 
-        return projectRepository.findById(id).orElse(null);
-    }
+	public Project saveInDb(Project project, String loggedInEmail) {
+		User loggedInUser = userService.getUser(loggedInEmail);
+		project.setOwner(loggedInUser);
+		project.setCreateDate(new Date());
+		return projectRepository.save(project);
+	}
 
-    public List<Task> getTasks(long project_id) {
-        return taskRepository.findAllByProject_Id(project_id);
-    }
+	public Project getProjectById(long id) {
 
-    public Task getTaskById(long taskID, long projectID) {
-        Task task = taskRepository.findById(taskID).orElse(null);
-        if (task == null || task.getProject().getId() != projectID) {
-            return null;
-        }
-        else {
-            return task;
-        }
-    }
+		return projectRepository.findById(id).orElse(null);
+	}
 
-    public Task saveTaskInDb(Task task,String loggedInEmail,long projectId){
+	public List<Task> getTasks(long project_id) {
+		return taskRepository.findAllByProject_Id(project_id);
+	}
 
-        User loggedUser = userService.getUser(loggedInEmail);
-        Project project = projectRepository.findById(projectId).orElse(null);
-        task.setProject(project);
-        task.setCreateDate(new Date());
+	public Task getTaskById(long taskID, long projectID) {
+		Task task = taskRepository.findById(taskID).orElse(null);
+		if (task == null || task.getProject().getId() != projectID) {
+			return null;
+		}
+		else {
+			return task;
+		}
+	}
 
-        return taskRepository.save(task);
-    }
+	public Task saveTaskInDb(Task task, String loggedInEmail, long projectId) {
+		System.out.println(task.getName());
+		System.out.println(task.getPriority());
+		User loggedUser = userService.getUser(loggedInEmail);
+		Project project = projectRepository.findById(projectId).orElse(null);
+		if (!project.getOwner().getUsername().equals(loggedUser.getUsername())) {
+			throw new RuntimeException("Logged in user is not the owner");
+		}
+		task.setId(0L);
+		task.setProject(project);
+		task.setCreateDate(new Date());
+		task.setCreator(loggedUser);
+		return taskRepository.save(task);
+	}
+
 }
