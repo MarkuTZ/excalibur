@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -53,6 +54,10 @@ public class ProjectService {
 		else {
 			return task;
 		}
+	}
+
+	public void deleteProject(long id){
+		 projectRepository.findById(id).ifPresent(projectRepository::delete);
 	}
 
 }

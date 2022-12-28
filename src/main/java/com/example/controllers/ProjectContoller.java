@@ -44,5 +44,9 @@ public class ProjectContoller {
 	public Task getAllTasks(@PathVariable("projectID") long projectID, @PathVariable("taskID") long taskID) {
 		return projectService.getTaskById(taskID, projectID);
 	}
+	@DeleteMapping(value = "/{projectID}")
+	public void deleteProject(@PathVariable("projectID") long projectID) {
+		projectService.deleteProject(projectID);
+	}
 
 }
