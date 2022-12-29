@@ -55,7 +55,7 @@ public class ProjectService {
         }
     }
 
-    public Task saveTaskInDb(Task task, String loggedInEmail, long projectId) {
+    public Task saveTaskInDb(Task task, long projectId) {
         System.out.println(task.getName());
         System.out.println(task.getPriority());
 

@@ -26,8 +26,8 @@ public class ProjectContoller {
 
 	@PostMapping(value = { "/{projectID}/tasks" })
 	public Task createTask(@RequestBody Task task, @PathVariable("projectID") long projectID) {
-		String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-		return projectService.saveTaskInDb(task, loggedInEmail, projectID);
+
+		return projectService.saveTaskInDb(task,projectID);
 	}
 
 	@GetMapping
