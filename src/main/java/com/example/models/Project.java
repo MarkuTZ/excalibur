@@ -1,9 +1,12 @@
 package com.example.models;
 
+import com.example.repositories.TaskRepository;
+import com.example.services.UserService;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -35,6 +38,7 @@ public class Project {
 	@ManyToOne
 	private User owner;
 
+
 	@JsonManagedReference
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "project")
 	private Set<Task> tasksList;
@@ -48,4 +52,20 @@ public class Project {
 	// ex: addTask(Task task) should add the task to the list of tasks and then set the
 	// project as the task's project.
 
+	public void addTask(Task task){
+
+		Project project = this;
+		User loggedUser = this.owner;
+
+		if (!project.getOwner().getUsername().equals(loggedUser.getUsername())) {
+			throw new RuntimeException("Logged in user is not the owner");
+		}
+
+		task.setId(0L);
+		task.setProject(project);
+		task.setCreateDate(new Date());
+		task.setCreator(loggedUser);
+
+		tasksList.add(task);
+	}
 }
