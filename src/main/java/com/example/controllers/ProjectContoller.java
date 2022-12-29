@@ -1,10 +1,12 @@
 package com.example.controllers;
 
+import com.example.dto.ProjectDto;
 import com.example.models.Project;
 import com.example.models.Task;
 import com.example.models.enums.Status;
 import com.example.services.ProjectService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,9 +24,9 @@ public class ProjectContoller {
 	private final ProjectService projectService;
 
 	@PostMapping
-	public Project registerProject(@RequestBody Project project) {
+	public ProjectDto registerProject(@RequestBody ProjectDto projectDto) {
 		String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-		return projectService.saveInDb(project, loggedInEmail);
+		return projectService.saveInDb(projectDto, loggedInEmail);
 	}
 
 	@GetMapping

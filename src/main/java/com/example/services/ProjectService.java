@@ -1,5 +1,6 @@
 package com.example.services;
-
+import org.modelmapper.ModelMapper;
+import com.example.dto.ProjectDto;
 import com.example.models.Project;
 import com.example.models.Task;
 import com.example.models.User;
@@ -28,16 +29,26 @@ public class ProjectService {
 	@Autowired
 	private final UserService userService;
 
+	@Autowired
+	private ModelMapper modelMapper;
+
 	public List<Project> getProjects(String email) {
 		User loggedInUser = userService.getUser(email);
 		return projectRepository.findAllByOwnerIs(loggedInUser);
 	}
 
-	public Project saveInDb(Project project, String loggedInEmail) {
+	public ProjectDto saveInDb(ProjectDto projectDto, String loggedInEmail) {
 		User loggedInUser = userService.getUser(loggedInEmail);
+
+		//convert DTO to entity
+		Project project = modelMapper.map(projectDto, Project.class);
 		project.setOwner(loggedInUser);
 		project.setCreateDate(new Date());
-		return projectRepository.save(project);
+
+		Project newProject =  projectRepository.save(project);
+		//convert entity to DTO
+		return modelMapper.map(newProject, ProjectDto.class);
+
 	}
 
 	public Project getProjectById(long id) {
