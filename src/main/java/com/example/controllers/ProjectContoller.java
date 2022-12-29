@@ -2,10 +2,13 @@ package com.example.controllers;
 
 import com.example.models.Project;
 import com.example.models.Task;
+import com.example.models.enums.Status;
 import com.example.services.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,14 +38,13 @@ public class ProjectContoller {
 		return projectService.getProjectById(projectID);
 	}
 
-	@GetMapping(value = { "/{projectID}/tasks" })
-	public List<Task> getAllTasks(@PathVariable("projectID") long projectID) {
-		return projectService.getTasks(projectID);
+	@GetMapping(value ={ "/{projectID}/tasks"})
+	public ResponseEntity<?> getNumberOfTasksByStatus(@PathVariable("projectID") long projectID, @RequestParam (required = false) Status status) {
+		if(status !=null) {
+			return ResponseEntity.ok(projectService.getNumberOfTasks(projectID, status));
+		}
+		return ResponseEntity.ok(projectService.getTasks(projectID));
 	}
-
-	@GetMapping(value ={ "/{projectID}/tasks/{status}"})
-	public int getNumberOfTasksByStatus(@PathVariable("projectID") long projectID, @PathVariable("status") String status){return projectService.getNumberOfTasks(projectID,status);}
-
 
 	@GetMapping(value = { "/{projectID}/tasks/{taskID}" })
 	public Task getAllTasks(@PathVariable("projectID") long projectID, @PathVariable("taskID") long taskID) {
@@ -50,8 +52,8 @@ public class ProjectContoller {
 	}
 
 	@DeleteMapping(value = "/{projectID}")
-	public void deleteProject(@PathVariable("projectID") long projectID) {
-		projectService.deleteProject(projectID);
+	public Project deleteProject(@PathVariable("projectID") long projectID) {
+		return projectService.deleteProject(projectID);
 	}
 
 }

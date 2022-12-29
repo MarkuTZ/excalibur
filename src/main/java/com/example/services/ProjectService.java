@@ -3,6 +3,7 @@ package com.example.services;
 import com.example.models.Project;
 import com.example.models.Task;
 import com.example.models.User;
+import com.example.models.enums.Status;
 import com.example.repositories.ProjectRepository;
 import com.example.repositories.TaskRepository;
 import lombok.RequiredArgsConstructor;
@@ -57,14 +58,15 @@ public class ProjectService {
 		}
 	}
 
-	public void deleteProject(long id){
-		 projectRepository.findById(id).ifPresent(projectRepository::delete);
+	public Project deleteProject(long id){
+		Project project = projectRepository.findById(id).orElse(null);
+		projectRepository.deleteById(id);
+		return project;
 	}
 
-	public int getNumberOfTasks(long id, String status){
-		return getTasks(id).stream()
-				.filter(task -> String.valueOf(task.getStatus()).equals(status)).toList()
-				.size();
-
+	public int getNumberOfTasks(long id, Status status){
+		return taskRepository.findAllByStatusAndProject_Id(status,id).size();
 	}
+
+
 }
