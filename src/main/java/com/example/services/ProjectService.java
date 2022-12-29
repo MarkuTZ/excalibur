@@ -65,4 +65,9 @@ public class ProjectService {
         return taskRepository.save(task);
     }
 
+    public void deleteTask(long idTask){
+
+        taskRepository.findById(idTask).ifPresent(taskRepository::delete);
+    }
+
 }
