@@ -58,15 +58,9 @@ public class ProjectService {
     public Task saveTaskInDb(Task task, String loggedInEmail, long projectId) {
         System.out.println(task.getName());
         System.out.println(task.getPriority());
-//		User loggedUser = userService.getUser(loggedInEmail);
+
         Project project = projectRepository.findById(projectId).orElse(null);
-//		if (!project.getOwner().getUsername().equals(loggedUser.getUsername())) {
-//			throw new RuntimeException("Logged in user is not the owner");
-//		}
-//		task.setId(0L);
-//		task.setProject(project);
-//		task.setCreateDate(new Date());
-//		task.setCreator(loggedUser);
+
         project.addTask(task);
         return taskRepository.save(task);
     }
