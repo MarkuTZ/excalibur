@@ -16,7 +16,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/projects")
-public class ProjectContoller {
+public class ProjectController {
 
 	@Autowired
 	private final ProjectService projectService;
@@ -45,11 +45,6 @@ public class ProjectContoller {
 			return ResponseEntity.ok(projectService.getNumberOfTasks(projectID, status));
 		}
 		return ResponseEntity.ok(projectService.getTasks(projectID));
-	}
-
-	@GetMapping(value = { "/{projectID}/tasks" })
-	public List<Task> getAllTasksByProject(@PathVariable("projectID") long projectID) {
-		return projectService.getTasks(projectID);
 	}
 
 	@GetMapping(value = { "/{projectID}/tasks/{taskID}" })
