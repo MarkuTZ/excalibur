@@ -6,11 +6,9 @@ import com.example.models.Task;
 import com.example.models.enums.Status;
 import com.example.services.ProjectService;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,13 +38,15 @@ public class ProjectContoller {
 		return projectService.getProjectById(projectID);
 	}
 
-	@GetMapping(value ={ "/{projectID}/tasks"})
-	public ResponseEntity<?> getNumberOfTasksByStatus(@PathVariable("projectID") long projectID, @RequestParam (required = false) Status status) {
+	@GetMapping(value = { "/{projectID}/tasks" })
+	public ResponseEntity<?> getNumberOfTasksByStatus(@PathVariable("projectID") long projectID,
+			@RequestParam(required = false) Status status) {
 		if (status != null) {
 			return ResponseEntity.ok(projectService.getNumberOfTasks(projectID, status));
 		}
 		return ResponseEntity.ok(projectService.getTasks(projectID));
 	}
+
 	@GetMapping(value = { "/{projectID}/tasks" })
 	public List<Task> getAllTasksByProject(@PathVariable("projectID") long projectID) {
 		return projectService.getTasks(projectID);

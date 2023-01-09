@@ -5,15 +5,22 @@ import com.example.models.enums.Status;
 import lombok.Data;
 
 import java.util.Date;
+
 @Data
 public class ProjectDto {
 
-    private long id;
-    private String name;
-    private String description;
-    private Date createDate;
-    private Date deadline;
-    private User owner;
-    private Status projectStatus;
+	private long id;
+
+	private String name;
+
+	private String description;
+
+	private Date createDate;
+
+	private Date deadline;
+
+	private User owner;
+
+	private Status projectStatus;
 
 }
