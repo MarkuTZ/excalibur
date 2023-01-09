@@ -1,11 +1,14 @@
 package com.example.services;
 
+import com.example.dto.ProjectDto;
 import com.example.models.Project;
 import com.example.models.Task;
 import com.example.models.User;
+import com.example.models.enums.Status;
 import com.example.repositories.ProjectRepository;
 import com.example.repositories.TaskRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,16 +28,26 @@ public class ProjectService {
 	@Autowired
 	private final UserService userService;
 
+	@Autowired
+	private ModelMapper modelMapper;
+
 	public List<Project> getProjects(String email) {
 		User loggedInUser = userService.getUser(email);
 		return projectRepository.findAllByOwnerIs(loggedInUser);
 	}
 
-	public Project saveInDb(Project project, String loggedInEmail) {
+	public ProjectDto saveInDb(ProjectDto projectDto, String loggedInEmail) {
 		User loggedInUser = userService.getUser(loggedInEmail);
+
+		// convert DTO to entity
+		Project project = modelMapper.map(projectDto, Project.class);
 		project.setOwner(loggedInUser);
 		project.setCreateDate(new Date());
-		return projectRepository.save(project);
+
+		Project newProject = projectRepository.save(project);
+		// convert entity to DTO
+		return modelMapper.map(newProject, ProjectDto.class);
+
 	}
 
 	public Project getProjectById(long id) {
@@ -53,6 +66,16 @@ public class ProjectService {
 		else {
 			return task;
 		}
+	}
+
+	public Project deleteProject(long id) {
+		Project project = projectRepository.findById(id).orElse(null);
+		projectRepository.deleteById(id);
+		return project;
+	}
+
+	public int getNumberOfTasks(long id, Status status) {
+		return taskRepository.findAllByStatusAndProject_Id(status, id).size();
 	}
 
 }

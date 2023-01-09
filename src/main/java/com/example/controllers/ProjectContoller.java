@@ -1,10 +1,13 @@
 package com.example.controllers;
 
+import com.example.dto.ProjectDto;
 import com.example.models.Project;
 import com.example.models.Task;
+import com.example.models.enums.Status;
 import com.example.services.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,9 +22,9 @@ public class ProjectContoller {
 	private final ProjectService projectService;
 
 	@PostMapping
-	public Project registerProject(@RequestBody Project project) {
+	public ProjectDto registerProject(@RequestBody ProjectDto projectDto) {
 		String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-		return projectService.saveInDb(project, loggedInEmail);
+		return projectService.saveInDb(projectDto, loggedInEmail);
 	}
 
 	@GetMapping
@@ -36,6 +39,15 @@ public class ProjectContoller {
 	}
 
 	@GetMapping(value = { "/{projectID}/tasks" })
+	public ResponseEntity<?> getNumberOfTasksByStatus(@PathVariable("projectID") long projectID,
+			@RequestParam(required = false) Status status) {
+		if (status != null) {
+			return ResponseEntity.ok(projectService.getNumberOfTasks(projectID, status));
+		}
+		return ResponseEntity.ok(projectService.getTasks(projectID));
+	}
+
+	@GetMapping(value = { "/{projectID}/tasks" })
 	public List<Task> getAllTasksByProject(@PathVariable("projectID") long projectID) {
 		return projectService.getTasks(projectID);
 	}
@@ -43,6 +55,11 @@ public class ProjectContoller {
 	@GetMapping(value = { "/{projectID}/tasks/{taskID}" })
 	public Task getTaskById(@PathVariable("projectID") long projectID, @PathVariable("taskID") long taskID) {
 		return projectService.getTaskById(taskID, projectID);
+	}
+
+	@DeleteMapping(value = "/{projectID}")
+	public Project deleteProject(@PathVariable("projectID") long projectID) {
+		return projectService.deleteProject(projectID);
 	}
 
 }
