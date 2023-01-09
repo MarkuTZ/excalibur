@@ -42,14 +42,18 @@ public class ProjectContoller {
 
 	@GetMapping(value ={ "/{projectID}/tasks"})
 	public ResponseEntity<?> getNumberOfTasksByStatus(@PathVariable("projectID") long projectID, @RequestParam (required = false) Status status) {
-		if(status !=null) {
+		if (status != null) {
 			return ResponseEntity.ok(projectService.getNumberOfTasks(projectID, status));
 		}
 		return ResponseEntity.ok(projectService.getTasks(projectID));
 	}
+	@GetMapping(value = { "/{projectID}/tasks" })
+	public List<Task> getAllTasksByProject(@PathVariable("projectID") long projectID) {
+		return projectService.getTasks(projectID);
+	}
 
 	@GetMapping(value = { "/{projectID}/tasks/{taskID}" })
-	public Task getAllTasks(@PathVariable("projectID") long projectID, @PathVariable("taskID") long taskID) {
+	public Task getTaskById(@PathVariable("projectID") long projectID, @PathVariable("taskID") long taskID) {
 		return projectService.getTaskById(taskID, projectID);
 	}
 
