@@ -1,5 +1,6 @@
 package com.example.models;
 
+import com.example.models.dto.ProjectDto;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,8 +45,10 @@ public class Project {
 			inverseJoinColumns = @JoinColumn(name = "user_id"))
 	private Set<User> collaborators;
 
-	// TODO: Create methods for adding tasks
-	// ex: addTask(Task task) should add the task to the list of tasks and then set the
-	// project as the task's project.
+	public Project(ProjectDto projectDto) {
+		this.name = projectDto.getName();
+		this.description = projectDto.getDescription();
+		this.deadline = projectDto.getDeadline();
+	}
 
 }

@@ -1,19 +1,21 @@
 package com.example.services;
 
-import com.example.dto.ProjectDto;
+import com.example.exception.GenericError;
 import com.example.models.Project;
 import com.example.models.Task;
 import com.example.models.User;
+import com.example.models.dto.ProjectDto;
 import com.example.models.enums.Status;
 import com.example.repositories.ProjectRepository;
 import com.example.repositories.TaskRepository;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,30 +30,41 @@ public class ProjectService {
 	@Autowired
 	private final UserService userService;
 
-	@Autowired
-	private ModelMapper modelMapper;
-
-	public List<Project> getProjects(String email) {
+	public List<ProjectDto> getProjects(String email) {
 		User loggedInUser = userService.getUser(email);
-		return projectRepository.findAllByOwnerIs(loggedInUser);
+		List<Project> projects = projectRepository.findAllByOwnerIs(loggedInUser);
+		return projects.stream().map(project -> {
+			ProjectDto projectDto = new ProjectDto(project);
+			projectDto.setTasksDone(
+					project.getTasksList().stream().filter(task -> task.getStatus().equals(Status.DONE)).count());
+			return projectDto;
+		}).collect(Collectors.toList());
 	}
 
 	public ProjectDto saveInDb(ProjectDto projectDto, String loggedInEmail) {
 		User loggedInUser = userService.getUser(loggedInEmail);
 
 		// convert DTO to entity
-		Project project = modelMapper.map(projectDto, Project.class);
+		Project project = new Project(projectDto);
 		project.setOwner(loggedInUser);
 		project.setCreateDate(new Date());
-
-		Project newProject = projectRepository.save(project);
-		// convert entity to DTO
-		return modelMapper.map(newProject, ProjectDto.class);
-
+		return new ProjectDto(projectRepository.save(project));
 	}
 
-	public Project getProjectById(long id) {
-		return projectRepository.findById(id).orElse(null);
+	public ProjectDto getProjectById(long id, String loggedInEmail) {
+		User loggedUser = userService.getUser(loggedInEmail);
+		Project project = projectRepository.findById(id).orElse(null);
+		if (project == null) {
+			throw new GenericError(HttpStatus.NOT_FOUND, "Project with id:" + id + " doesn't exist!");
+		}
+		else if (!project.getOwner().getUsername().equals(loggedUser.getUsername())) {
+			throw new GenericError(HttpStatus.BAD_REQUEST,
+					"Project with id:" + id + " was not created by " + loggedUser.getUsername());
+		}
+		ProjectDto projectDto = new ProjectDto(project);
+		projectDto.setTasksDone(
+				project.getTasksList().stream().filter(task -> task.getStatus().equals(Status.DONE)).count());
+		return projectDto;
 	}
 
 	public List<Task> getTasks(long project_id) {
@@ -74,7 +87,7 @@ public class ProjectService {
 		return project;
 	}
 
-	public int getNumberOfTasks(long id, Status status) {
+	public int getNumberOfTasksByStatus(long id, Status status) {
 		return taskRepository.findAllByStatusAndProject_Id(status, id).size();
 	}
 
