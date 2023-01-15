@@ -1,9 +1,12 @@
 package com.example.services;
 
+import com.example.exception.GenericError;
+import com.example.models.NewUserDTO;
 import com.example.models.User;
 import com.example.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,12 +21,11 @@ public class UserService {
 	private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 	public User getUser(String username) {
-		return userRepository.findByUsername(username);
-	}
-
-	// check user
-	public User existUser(String username) {
-		return userRepository.findByUsername(username);
+		User user = userRepository.findByUsername(username);
+		if (user == null) {
+			throw new GenericError(HttpStatus.NOT_FOUND, "User " + username + " doesn't exist");
+		}
+		return user;
 	}
 
 	public boolean checkPassword(User u, String pass) {
@@ -31,16 +33,14 @@ public class UserService {
 	}
 
 	// save user in DB
-	public User saveUserInDb(String username, String password) {
-		User u = new User();
-		if (existUser(username) == null) {
-			u.setUsername(username);
-			u.setPassword(passwordEncoder.encode(password));
-			return userRepository.save(u);
+	public User saveUserInDb(NewUserDTO newUser) {
+		if (userRepository.findByUsername(newUser.getUsername()) != null) {
+			throw new GenericError(HttpStatus.BAD_REQUEST, "Username " + newUser.getUsername() + " already exists!");
 		}
-		else {
-			return null;
-		}
+		User user = new User();
+		user.setUsername(newUser.getUsername());
+		user.setPassword(passwordEncoder.encode(newUser.getPassword()));
+		return userRepository.save(user);
 	}
 
 }

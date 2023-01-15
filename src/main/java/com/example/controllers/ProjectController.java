@@ -1,8 +1,8 @@
 package com.example.controllers;
 
-import com.example.dto.ProjectDto;
 import com.example.models.Project;
 import com.example.models.Task;
+import com.example.models.dto.ProjectDto;
 import com.example.models.enums.Status;
 import com.example.services.ProjectService;
 import lombok.RequiredArgsConstructor;
@@ -28,21 +28,22 @@ public class ProjectController {
 	}
 
 	@GetMapping
-	public List<Project> getAllProjects() {
+	public List<ProjectDto> getAllProjects() {
 		String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
 		return projectService.getProjects(loggedInEmail);
 	}
 
 	@GetMapping(value = { "/{projectID}" })
-	public Project getProjectById(@PathVariable("projectID") long projectID) {
-		return projectService.getProjectById(projectID);
+	public ProjectDto getProjectById(@PathVariable("projectID") long projectID) {
+		String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+		return projectService.getProjectById(projectID, loggedInEmail);
 	}
 
 	@GetMapping(value = { "/{projectID}/tasks" })
 	public ResponseEntity<?> getNumberOfTasksByStatus(@PathVariable("projectID") long projectID,
 			@RequestParam(required = false) Status status) {
 		if (status != null) {
-			return ResponseEntity.ok(projectService.getNumberOfTasks(projectID, status));
+			return ResponseEntity.ok(projectService.getNumberOfTasksByStatus(projectID, status));
 		}
 		return ResponseEntity.ok(projectService.getTasks(projectID));
 	}
@@ -54,7 +55,22 @@ public class ProjectController {
 
 	@DeleteMapping(value = "/{projectID}")
 	public Project deleteProject(@PathVariable("projectID") long projectID) {
-		return projectService.deleteProject(projectID);
+		String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+		return projectService.deleteProject(projectID, loggedInEmail);
+	}
+
+	@PostMapping(value = "/{projectID}/collaborators")
+	public Project addCollaboratorToProject(@PathVariable("projectID") long projectID,
+			@RequestParam String collaboratorEmail) {
+		String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+		return projectService.addCollaborator(projectID, loggedInEmail, collaboratorEmail);
+	}
+
+	@DeleteMapping(value = "/{projectID}/collaborators")
+	public Project deleteCollaboratorFromProject(@PathVariable("projectID") long projectID,
+			@RequestParam String collaboratorEmail) {
+		String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+		return projectService.deleteCollaborator(projectID, loggedInEmail, collaboratorEmail);
 	}
 
 }
