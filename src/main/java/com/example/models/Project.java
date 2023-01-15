@@ -2,7 +2,9 @@ package com.example.models;
 
 import com.example.repositories.TaskRepository;
 import com.example.services.UserService;
+import com.example.models.dto.ProjectDto;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -36,8 +38,8 @@ public class Project {
 	private Date deadline;
 
 	@ManyToOne
+	@NotNull
 	private User owner;
-
 
 	@JsonManagedReference
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "project")
@@ -48,9 +50,19 @@ public class Project {
 			inverseJoinColumns = @JoinColumn(name = "user_id"))
 	private Set<User> collaborators;
 
-	// TODO: Create methods for adding tasks
-	// ex: addTask(Task task) should add the task to the list of tasks and then set the
-	// project as the task's project.
+	public Project(ProjectDto projectDto) {
+		this.name = projectDto.getName();
+		this.description = projectDto.getDescription();
+		this.deadline = projectDto.getDeadline();
+	}
+
+	public void addCollaborator(User collaborator) {
+		collaborators.add(collaborator);
+	}
+
+	public void deleteCollaborator(User collaborator) {
+		collaborators.remove(collaborator);
+	}
 
 	public void addTask(Task task){
 

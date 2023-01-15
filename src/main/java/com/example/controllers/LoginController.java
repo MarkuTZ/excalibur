@@ -1,5 +1,7 @@
 package com.example.controllers;
 
+import com.example.exception.GenericError;
+import com.example.models.NewUserDTO;
 import com.example.models.User;
 import com.example.security.JwtUtils;
 import com.example.services.UserService;
@@ -25,46 +27,28 @@ public class LoginController {
 	@Autowired
 	private final JwtUtils jwtUtils;
 
-	static User logedUser;
-
 	@PostMapping("/token")
 	public ResponseEntity<?> getToken(@RequestBody ObjectNode json) {
-		logedUser = new User();
 		String stringUsername = json.get("username").textValue();
 		String stringPassword = json.get("password").textValue();
 		Map<String, String> jsonResponse = new HashMap<>();
-		User u;
-		if ((u = userService.existUser(stringUsername)) != null) {
+		User u = userService.getUser(stringUsername);
+		if (u != null) {
 			if (!userService.checkPassword(u, stringPassword)) {
-				jsonResponse.put("message", "Wrong credentials!");
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonResponse);
+				throw new GenericError(HttpStatus.BAD_REQUEST, "Wrong credentials!");
 			}
 			String token = jwtUtils.generateToken(stringUsername);
 			jsonResponse.put("token", token);
-			logedUser.setId(userService.getUser(jwtUtils.getSubject(token)).getId());
-			logedUser.setUsername(stringUsername);
-			logedUser.setPassword(stringPassword);
 			return ResponseEntity.ok(jsonResponse);
 		}
 		else {
-			jsonResponse.put("Error:", "User doesn't exist");
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(jsonResponse);
+			throw new GenericError(HttpStatus.NOT_FOUND, "User doesn't exist");
 		}
 	}
 
 	@PostMapping("/register")
-	public ResponseEntity<?> registerUser(@RequestBody ObjectNode json) {
-		String stringUsername = json.get("username").textValue();
-		String stringPassword = json.get("password").textValue();
-		Map<String, String> jsonResponse = new HashMap<>();
-		if (userService.existUser(stringUsername) == null) {
-			User u = userService.saveUserInDb(stringUsername, stringPassword);
-			return ResponseEntity.ok(u);
-		}
-		else {
-			jsonResponse.put("Error:", "User already exist");
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(jsonResponse);
-		}
+	public User registerUser(@RequestBody NewUserDTO user) {
+		return userService.saveUserInDb(user);
 	}
 
 }
