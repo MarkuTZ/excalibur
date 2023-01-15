@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/projects")
-public class ProjectContoller {
+public class ProjectController {
 
 	@Autowired
 	private final ProjectService projectService;
