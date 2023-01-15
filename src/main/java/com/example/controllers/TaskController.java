@@ -1,7 +1,7 @@
 package com.example.controllers;
 
 import com.example.models.Task;
-import com.example.models.User;
+import com.example.models.enums.Status;
 import com.example.services.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,16 +22,22 @@ public class TaskController {
 		return projectService.getTasks(loggedInEmail);
 	}
 
-	@DeleteMapping(value = { "/{taskID}" })
+	@DeleteMapping(value = "/{taskID}")
 	public Task deleteTask(@PathVariable("taskID") long taskID) {
 		String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
 		return projectService.deleteTask(taskID, loggedInEmail);
 	}
 
-	@PostMapping(value = { "/{taskID}/assignUser"} )
-	public Task assignUser(@PathVariable("taskID") long taskID,@RequestParam String assignedUserEmail){
+	@PatchMapping(value = "/{taskID}")
+	public Task assignUser(@PathVariable("taskID") long taskID, @RequestParam String assignee) {
 		String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-		return projectService.assignUser(taskID,loggedInEmail,assignedUserEmail);
+		return projectService.assignUser(taskID, loggedInEmail, assignee);
+	}
+
+	@PatchMapping(value = "/{taskID}/status")
+	public Task changeStatus(@PathVariable("taskID") long taskID, @RequestParam Status status) {
+		String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+		return projectService.changeTaskStatus(taskID, status, loggedInEmail);
 	}
 
 }

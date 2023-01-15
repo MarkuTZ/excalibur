@@ -3,6 +3,7 @@ package com.example.models;
 import com.example.models.enums.Priority;
 import com.example.models.enums.Status;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -28,20 +29,22 @@ public class Task {
 	private String description;
 
 	@Enumerated(EnumType.STRING)
-	@Column(columnDefinition = "enum('LOW', 'MEDIUM', 'HIGH')")
+	@Column(columnDefinition = "ENUM('LOW', 'MEDIUM', 'HIGH')")
 	private Priority priority;
 
 	@Column
 	private Date createDate;
 
 	@Column
+	@JsonFormat(pattern = "yyyy/MM/dd")
 	private Date startDate;
 
 	@Column
+	@JsonFormat(pattern = "yyyy/MM/dd")
 	private Date endDate;
 
 	@Enumerated(EnumType.STRING)
-	@Column(columnDefinition = "enum('TODO', 'IN PROGRESS', 'IN REVIEW', 'DONE')")
+	@Column(columnDefinition = "ENUM('TODO', 'IN_PROGRESS', 'IN_REVIEW', 'DONE')")
 	private Status status;
 
 	@ManyToOne
@@ -55,7 +58,4 @@ public class Task {
 	@JoinColumn(name = "project_id")
 	private Project project;
 
-	public void addAssignedUser(User assignedUser){
-		this.assignee=assignedUser;
-	}
 }

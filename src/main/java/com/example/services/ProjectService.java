@@ -156,13 +156,28 @@ public class ProjectService {
 	public Task assignUser(long taskID, String loggedInEmail, String assignedUserEmail) {
 		User owner = userService.getUser(loggedInEmail);
 		Task task = taskRepository.findById(taskID).orElse(null);
+		if (task == null) {
+			throw new GenericError(HttpStatus.NOT_FOUND, "Task was not found");
+		}
 		if (!Objects.equals(task.getCreator().getUsername(), owner.getUsername())) {
 			throw new GenericError(HttpStatus.UNAUTHORIZED, "Only the owner can assign users to a task");
 		}
 		User assignedUser = userService.getUser(assignedUserEmail);
-		task.addAssignedUser(assignedUser);
+		task.setAssignee(assignedUser);
 		return taskRepository.save(task);
 	}
 
+	public Task changeTaskStatus(long taskID, Status status, String loggedInEmail) {
+		User loggedUser = userService.getUser(loggedInEmail);
+		Task task = taskRepository.findById(taskID).orElse(null);
+		if (task == null) {
+			throw new GenericError(HttpStatus.NOT_FOUND, "Task was not found");
+		}
+		if (!task.getCreator().equals(loggedUser) && !task.getAssignee().equals(loggedUser)) {
+			throw new GenericError(HttpStatus.UNAUTHORIZED, "Only the creator or the assignee can change the status");
+		}
+		task.setStatus(status);
+		return taskRepository.save(task);
+	}
 
 }
