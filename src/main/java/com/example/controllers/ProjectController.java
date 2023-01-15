@@ -3,11 +3,9 @@ package com.example.controllers;
 import com.example.models.Project;
 import com.example.models.Task;
 import com.example.models.dto.ProjectDto;
-import com.example.models.enums.Status;
 import com.example.services.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,33 +37,10 @@ public class ProjectController {
 		return projectService.getProjectById(projectID, loggedInEmail);
 	}
 
-	@GetMapping(value = { "/{projectID}/tasks" })
-	public ResponseEntity<?> getNumberOfTasksByStatus(@PathVariable("projectID") long projectID,
-			@RequestParam(required = false) Status status) {
-		if (status != null) {
-			return ResponseEntity.ok(projectService.getNumberOfTasksByStatus(projectID, status));
-		}
-		return ResponseEntity.ok(projectService.getTasks(projectID));
-	}
-
-	@GetMapping(value = { "/{projectID}/tasks/{taskID}" })
-	public Task getTaskById(@PathVariable("projectID") long projectID, @PathVariable("taskID") long taskID) {
-		return projectService.getTaskById(taskID, projectID);
-	}
-
-	@GetMapping(value = { "/{projectID}/tasks" })
-	public List<Task> getAllTasks(@PathVariable("projectID") long projectID) {
-		return projectService.getTasks(projectID);
-	}
-
-	@GetMapping(value = { "/{projectID}/tasks/{taskID}" })
-	public Task getAllTasks(@PathVariable("projectID") long projectID, @PathVariable("taskID") long taskID) {
-		return projectService.getTaskById(taskID, projectID);
-	}
-
-	@DeleteMapping(value = { "/{projectID}/tasks/{taskID}" })
-	public void deleteTask(@PathVariable("taskID") long taskID) {
-		projectService.deleteTask(taskID);
+	@PostMapping(value = { "/{projectID}/tasks" })
+	public Task createTask(@RequestBody Task task, @PathVariable("projectID") long projectID) {
+		String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+		return projectService.saveTaskInDb(task, projectID, loggedInEmail);
 	}
 
 	@DeleteMapping(value = "/{projectID}")

@@ -53,16 +53,17 @@ public class ProjectService {
 		return new ProjectDto(projectRepository.save(project));
 	}
 
-	public ProjectDto getProjectById(long id, String loggedInEmail) {
+	public ProjectDto getProjectById(long projectId, String loggedInEmail) {
 		User loggedUser = userService.getUser(loggedInEmail);
-		Project project = projectRepository.findById(id).orElse(null);
+		Project project = projectRepository.findById(projectId).orElse(null);
 		if (project == null) {
-			throw new GenericError(HttpStatus.NOT_FOUND, "Project with id:" + id + " doesn't exist!");
+			throw new GenericError(HttpStatus.NOT_FOUND, "Project with id:" + projectId + " doesn't exist!");
 		}
 		// TODO: Add collaborators as well
-		else if (!project.getOwner().getUsername().equals(loggedUser.getUsername())) {
+		else if (!project.getOwner().getUsername().equals(loggedUser.getUsername())
+				&& !project.getCollaborators().contains(loggedUser)) {
 			throw new GenericError(HttpStatus.BAD_REQUEST,
-					"Project with id:" + id + " was not created by " + loggedUser.getUsername());
+					loggedUser.getUsername() + " doesn't have acces to project with id: " + projectId);
 		}
 		ProjectDto projectDto = new ProjectDto(project);
 		projectDto.setTasksDone(
@@ -70,8 +71,8 @@ public class ProjectService {
 		return projectDto;
 	}
 
-	public List<Task> getTasks(long project_id) {
-		return taskRepository.findAllByProject_Id(project_id);
+	public List<Task> getTasks(String userEmail) {
+		return taskRepository.findAllByAssignee_Username(userEmail);
 	}
 
 	public Task getTaskById(long taskID, long projectID) {
@@ -84,19 +85,36 @@ public class ProjectService {
 		}
 	}
 
-	public Task saveTaskInDb(Task task, long projectId) {
-		System.out.println(task.getName());
-		System.out.println(task.getPriority());
-
+	public Task saveTaskInDb(Task task, long projectId, String loggedInEmail) {
+		User user = userService.getUser(loggedInEmail);
 		Project project = projectRepository.findById(projectId).orElse(null);
-
+		if (project == null) {
+			throw new GenericError(HttpStatus.NOT_FOUND, "Project was not found");
+		}
+		if (!project.getOwner().getUsername().equals(user.getUsername())
+				&& !project.getCollaborators().contains(user)) {
+			throw new GenericError(HttpStatus.UNAUTHORIZED, "Only the owner and collaborators can create tasks");
+		}
+		task.setId(0L);
+		task.setProject(project);
+		task.setCreateDate(new Date());
+		task.setCreator(user);
 		project.addTask(task);
 		return taskRepository.save(task);
 	}
 
-	public void deleteTask(long idTask) {
+	public Task deleteTask(long idTask, String loggedInEmail) {
+		User owner = userService.getUser(loggedInEmail);
+		Task task = taskRepository.findById(idTask).orElse(null);
+		if (task == null) {
+			throw new GenericError(HttpStatus.NOT_FOUND, "Task was not found");
+		}
+		if (!Objects.equals(task.getCreator().getUsername(), owner.getUsername())) {
+			throw new GenericError(HttpStatus.UNAUTHORIZED, "Only the owner can delete tasks");
+		}
+		taskRepository.delete(task);
+		return task;
 
-		taskRepository.findById(idTask).ifPresent(taskRepository::delete);
 	}
 
 	public Project deleteProject(long projectID, String loggedInEmail) {
