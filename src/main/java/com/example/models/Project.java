@@ -1,14 +1,11 @@
 package com.example.models;
 
-import com.example.repositories.TaskRepository;
-import com.example.services.UserService;
 import com.example.models.dto.ProjectDto;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -64,7 +61,7 @@ public class Project {
 		collaborators.remove(collaborator);
 	}
 
-	public void addTask(Task task){
+	public void addTask(Task task) {
 
 		Project project = this;
 		User loggedUser = this.owner;
@@ -80,4 +77,5 @@ public class Project {
 
 		tasksList.add(task);
 	}
+
 }

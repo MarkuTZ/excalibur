@@ -63,9 +63,10 @@ public class ProjectController {
 		return projectService.getTaskById(taskID, projectID);
 	}
 
-	@DeleteMapping(value = {"/{projectID}/tasks/{taskID}"})
-	public void deleteTask(@PathVariable("taskID") long taskID){
-		projectService.deleteTask(taskID);}
+	@DeleteMapping(value = { "/{projectID}/tasks/{taskID}" })
+	public void deleteTask(@PathVariable("taskID") long taskID) {
+		projectService.deleteTask(taskID);
+	}
 
 	@DeleteMapping(value = "/{projectID}")
 	public Project deleteProject(@PathVariable("projectID") long projectID) {

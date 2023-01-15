@@ -22,11 +22,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ProjectService {
 
-    @Autowired
-    private final ProjectRepository projectRepository;
+	@Autowired
+	private final ProjectRepository projectRepository;
 
-    @Autowired
-    private final UserService userService;
+	@Autowired
+	private final UserService userService;
 
 	@Autowired
 	private final TaskRepository taskRepository;
@@ -70,33 +70,34 @@ public class ProjectService {
 		return projectDto;
 	}
 
-    public List<Task> getTasks(long project_id) {
-        return taskRepository.findAllByProject_Id(project_id);
-    }
+	public List<Task> getTasks(long project_id) {
+		return taskRepository.findAllByProject_Id(project_id);
+	}
 
-    public Task getTaskById(long taskID, long projectID) {
-        Task task = taskRepository.findById(taskID).orElse(null);
-        if (task == null || task.getProject().getId() != projectID) {
-            return null;
-        } else {
-            return task;
-        }
-    }
+	public Task getTaskById(long taskID, long projectID) {
+		Task task = taskRepository.findById(taskID).orElse(null);
+		if (task == null || task.getProject().getId() != projectID) {
+			return null;
+		}
+		else {
+			return task;
+		}
+	}
 
-    public Task saveTaskInDb(Task task, long projectId) {
-        System.out.println(task.getName());
-        System.out.println(task.getPriority());
+	public Task saveTaskInDb(Task task, long projectId) {
+		System.out.println(task.getName());
+		System.out.println(task.getPriority());
 
-        Project project = projectRepository.findById(projectId).orElse(null);
+		Project project = projectRepository.findById(projectId).orElse(null);
 
-        project.addTask(task);
-        return taskRepository.save(task);
-    }
+		project.addTask(task);
+		return taskRepository.save(task);
+	}
 
-    public void deleteTask(long idTask){
+	public void deleteTask(long idTask) {
 
-        taskRepository.findById(idTask).ifPresent(taskRepository::delete);
-    }
+		taskRepository.findById(idTask).ifPresent(taskRepository::delete);
+	}
 
 	public Project deleteProject(long projectID, String loggedInEmail) {
 		User owner = userService.getUser(loggedInEmail);
