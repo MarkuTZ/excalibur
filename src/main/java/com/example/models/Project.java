@@ -2,6 +2,7 @@ package com.example.models;
 
 import com.example.models.dto.ProjectDto;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -34,6 +35,7 @@ public class Project {
 	private Date deadline;
 
 	@ManyToOne
+	@NotNull
 	private User owner;
 
 	@JsonManagedReference
@@ -49,6 +51,14 @@ public class Project {
 		this.name = projectDto.getName();
 		this.description = projectDto.getDescription();
 		this.deadline = projectDto.getDeadline();
+	}
+
+	public void addCollaborator(User collaborator) {
+		collaborators.add(collaborator);
+	}
+
+	public void deleteCollaborator(User collaborator) {
+		collaborators.remove(collaborator);
 	}
 
 }

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,6 +49,7 @@ public class ProjectService {
 		Project project = new Project(projectDto);
 		project.setOwner(loggedInUser);
 		project.setCreateDate(new Date());
+
 		return new ProjectDto(projectRepository.save(project));
 	}
 
@@ -57,6 +59,7 @@ public class ProjectService {
 		if (project == null) {
 			throw new GenericError(HttpStatus.NOT_FOUND, "Project with id:" + id + " doesn't exist!");
 		}
+		// TODO: Add collaborators as well
 		else if (!project.getOwner().getUsername().equals(loggedUser.getUsername())) {
 			throw new GenericError(HttpStatus.BAD_REQUEST,
 					"Project with id:" + id + " was not created by " + loggedUser.getUsername());
@@ -81,14 +84,40 @@ public class ProjectService {
 		}
 	}
 
-	public Project deleteProject(long id) {
-		Project project = projectRepository.findById(id).orElse(null);
-		projectRepository.deleteById(id);
+	public Project deleteProject(long projectID, String loggedInEmail) {
+		User owner = userService.getUser(loggedInEmail);
+		Project project = projectRepository.findById(projectID).orElse(null);
+		if (!Objects.equals(project.getOwner().getUsername(), owner.getUsername())) {
+			throw new GenericError(HttpStatus.UNAUTHORIZED, "Only the owner can delete the project");
+		}
+		projectRepository.deleteById(projectID);
 		return project;
 	}
 
 	public int getNumberOfTasksByStatus(long id, Status status) {
 		return taskRepository.findAllByStatusAndProject_Id(status, id).size();
+	}
+
+	public Project addCollaborator(long projectID, String loggedInEmail, String collaboratorEmail) {
+		User owner = userService.getUser(loggedInEmail);
+		Project project = projectRepository.findById(projectID).orElse(null);
+		if (!Objects.equals(project.getOwner().getUsername(), owner.getUsername())) {
+			throw new GenericError(HttpStatus.UNAUTHORIZED, "Only the owner can add collaborators to the project");
+		}
+		User collaborator = userService.getUser(collaboratorEmail);
+		project.addCollaborator(collaborator);
+		return projectRepository.save(project);
+	}
+
+	public Project deleteCollaborator(long projectID, String loggedInEmail, String collaboratorEmail) {
+		User owner = userService.getUser(loggedInEmail);
+		Project project = projectRepository.findById(projectID).orElse(null);
+		if (!Objects.equals(project.getOwner().getUsername(), owner.getUsername())) {
+			throw new GenericError(HttpStatus.UNAUTHORIZED, "Only the owner can remove collaborators from the project");
+		}
+		User collaborator = userService.getUser(collaboratorEmail);
+		project.deleteCollaborator(collaborator);
+		return projectRepository.save(project);
 	}
 
 }

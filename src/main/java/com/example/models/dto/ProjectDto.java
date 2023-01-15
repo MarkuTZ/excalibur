@@ -3,13 +3,19 @@ package com.example.models.dto;
 import com.example.models.Project;
 import com.example.models.Task;
 import com.example.models.User;
-import com.example.models.enums.Status;
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Date;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProjectDto {
 
 	private long id;
@@ -20,11 +26,10 @@ public class ProjectDto {
 
 	private Date createDate;
 
+	@JsonFormat(pattern = "yyyy/MM/dd")
 	private Date deadline;
 
 	private User owner;
-
-	private Status projectStatus;
 
 	private Set<Task> tasks;
 

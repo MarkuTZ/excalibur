@@ -55,7 +55,22 @@ public class ProjectController {
 
 	@DeleteMapping(value = "/{projectID}")
 	public Project deleteProject(@PathVariable("projectID") long projectID) {
-		return projectService.deleteProject(projectID);
+		String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+		return projectService.deleteProject(projectID, loggedInEmail);
+	}
+
+	@PostMapping(value = "/{projectID}/collaborators")
+	public Project addCollaboratorToProject(@PathVariable("projectID") long projectID,
+			@RequestParam String collaboratorEmail) {
+		String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+		return projectService.addCollaborator(projectID, loggedInEmail, collaboratorEmail);
+	}
+
+	@DeleteMapping(value = "/{projectID}/collaborators")
+	public Project deleteCollaboratorFromProject(@PathVariable("projectID") long projectID,
+			@RequestParam String collaboratorEmail) {
+		String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+		return projectService.deleteCollaborator(projectID, loggedInEmail, collaboratorEmail);
 	}
 
 }
