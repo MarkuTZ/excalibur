@@ -153,4 +153,16 @@ public class ProjectService {
 		return projectRepository.save(project);
 	}
 
+	public Task assignUser(long taskID, String loggedInEmail, String assignedUserEmail) {
+		User owner = userService.getUser(loggedInEmail);
+		Task task = taskRepository.findById(taskID).orElse(null);
+		if (!Objects.equals(task.getCreator().getUsername(), owner.getUsername())) {
+			throw new GenericError(HttpStatus.UNAUTHORIZED, "Only the owner can assign users to a task");
+		}
+		User assignedUser = userService.getUser(assignedUserEmail);
+		task.addAssignedUser(assignedUser);
+		return taskRepository.save(task);
+	}
+
+
 }

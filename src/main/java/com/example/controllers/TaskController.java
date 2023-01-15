@@ -1,6 +1,7 @@
 package com.example.controllers;
 
 import com.example.models.Task;
+import com.example.models.User;
 import com.example.services.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,6 +26,12 @@ public class TaskController {
 	public Task deleteTask(@PathVariable("taskID") long taskID) {
 		String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
 		return projectService.deleteTask(taskID, loggedInEmail);
+	}
+
+	@PostMapping(value = { "/{taskID}/assignUser"} )
+	public Task assignUser(@PathVariable("taskID") long taskID,@RequestParam String assignedUserEmail){
+		String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+		return projectService.assignUser(taskID,loggedInEmail,assignedUserEmail);
 	}
 
 }
