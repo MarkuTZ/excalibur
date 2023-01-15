@@ -26,10 +26,10 @@ public class ProjectService {
 	private final ProjectRepository projectRepository;
 
 	@Autowired
-	private final TaskRepository taskRepository;
+	private final UserService userService;
 
 	@Autowired
-	private final UserService userService;
+	private final TaskRepository taskRepository;
 
 	public List<ProjectDto> getProjects(String email) {
 		User loggedInUser = userService.getUser(email);
@@ -82,6 +82,21 @@ public class ProjectService {
 		else {
 			return task;
 		}
+	}
+
+	public Task saveTaskInDb(Task task, long projectId) {
+		System.out.println(task.getName());
+		System.out.println(task.getPriority());
+
+		Project project = projectRepository.findById(projectId).orElse(null);
+
+		project.addTask(task);
+		return taskRepository.save(task);
+	}
+
+	public void deleteTask(long idTask) {
+
+		taskRepository.findById(idTask).ifPresent(taskRepository::delete);
 	}
 
 	public Project deleteProject(long projectID, String loggedInEmail) {

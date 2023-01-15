@@ -61,4 +61,21 @@ public class Project {
 		collaborators.remove(collaborator);
 	}
 
+	public void addTask(Task task) {
+
+		Project project = this;
+		User loggedUser = this.owner;
+
+		if (!project.getOwner().getUsername().equals(loggedUser.getUsername())) {
+			throw new RuntimeException("Logged in user is not the owner");
+		}
+
+		task.setId(0L);
+		task.setProject(project);
+		task.setCreateDate(new Date());
+		task.setCreator(loggedUser);
+
+		tasksList.add(task);
+	}
+
 }

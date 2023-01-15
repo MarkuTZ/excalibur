@@ -53,6 +53,21 @@ public class ProjectController {
 		return projectService.getTaskById(taskID, projectID);
 	}
 
+	@GetMapping(value = { "/{projectID}/tasks" })
+	public List<Task> getAllTasks(@PathVariable("projectID") long projectID) {
+		return projectService.getTasks(projectID);
+	}
+
+	@GetMapping(value = { "/{projectID}/tasks/{taskID}" })
+	public Task getAllTasks(@PathVariable("projectID") long projectID, @PathVariable("taskID") long taskID) {
+		return projectService.getTaskById(taskID, projectID);
+	}
+
+	@DeleteMapping(value = { "/{projectID}/tasks/{taskID}" })
+	public void deleteTask(@PathVariable("taskID") long taskID) {
+		projectService.deleteTask(taskID);
+	}
+
 	@DeleteMapping(value = "/{projectID}")
 	public Project deleteProject(@PathVariable("projectID") long projectID) {
 		String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
