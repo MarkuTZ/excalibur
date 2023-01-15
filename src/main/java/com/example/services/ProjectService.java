@@ -33,7 +33,10 @@ public class ProjectService {
 
 	public List<ProjectDto> getProjects(String email) {
 		User loggedInUser = userService.getUser(email);
-		List<Project> projects = projectRepository.findAllByOwnerIs(loggedInUser);
+		List<Project> projects = projectRepository.findAll();
+		projects = projects.stream().filter(
+				project -> project.getOwner().equals(loggedInUser) || project.getCollaborators().contains(loggedInUser))
+				.collect(Collectors.toList());
 		return projects.stream().map(project -> {
 			ProjectDto projectDto = new ProjectDto(project);
 			projectDto.setTasksDone(

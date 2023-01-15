@@ -33,6 +33,8 @@ public class ProjectDto {
 
 	private Set<Task> tasks;
 
+	private Set<User> collaborators;
+
 	private long tasksDone;
 
 	public ProjectDto(Project project) {
@@ -42,6 +44,7 @@ public class ProjectDto {
 		this.createDate = project.getCreateDate();
 		this.deadline = project.getDeadline();
 		this.owner = project.getOwner();
+		this.collaborators = project.getCollaborators();
 		this.tasks = project.getTasksList();
 		this.tasksDone = 0;
 	}
